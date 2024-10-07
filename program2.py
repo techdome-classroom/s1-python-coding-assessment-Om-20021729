@@ -1,24 +1,34 @@
-def is_match(message, pattern):
-   
-    if len(pattern) == 0:
-        return len(message) == 0
+def decode_message(s: str, p: str) -> bool:
+    def match_helper(s_idx, p_idx):
+      
+        if s_idx == len(s) and p_idx == len(p):
+            return True
+        
+        if p_idx == len(p):
+            return False
 
-   
-    if pattern[0] == '*':
+        
+        if p[p_idx] == "*":
+            
+            return match_helper(s_idx, p_idx + 1) or (
+                s_idx < len(s) and match_helper(s_idx + 1, p_idx)
+            )
+
        
-        return is_match(message, pattern[1:]) or (len(message) > 0 and is_match(message[1:], pattern))
+        if s_idx < len(s) and (p[p_idx] == "?" or p[p_idx] == s[s_idx]):
+            
+            return match_helper(s_idx + 1, p_idx + 1)
 
-   
-    if pattern[0] == '?' or pattern[0] == message[0]:
-        return is_match(message[1:], pattern[1:])
+       
+        return False
 
-   
-    return False
+    
+    return match_helper(0, 0)
 
 
-print(is_match("aa", "a"))
-print(is_match("aa", "*"))     
-print(is_match("cb", "?a"))      
-print(is_match("abcd", "a*d"))  
-print(is_match("abcd", "?b*d")) 
-print(is_match("abcd", "?b?*"))  
+
+print(decode_message("aa", "a"))  
+print(decode_message("aa", "*"))  
+print(decode_message("cb", "?a"))  
+print(decode_message("abc", "a*c"))  
+print(decode_message("abc", "a?c"))  
